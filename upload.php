@@ -1,29 +1,23 @@
 <?php
 
-$dir = "uploads/";
+$uploadDir = "uploads/";
 
-if (!file_exists($dir)) {
-    mkdir($dir, 0777, true);
+if (!isset($_FILES["video"])) {
+    exit("No file");
 }
 
-$ext = pathinfo($_FILES["video"]["name"], PATHINFO_EXTENSION);
-$filename = uniqid("video_", true) . "." . $ext;
+$file = $_FILES["video"];
 
-$path = $dir . $filename;
+$filename = time() . "_" . basename($file["name"]);
+$targetPath = $uploadDir . $filename;
 
-if (move_uploaded_file($_FILES["video"]["tmp_name"], $path)) {
-
-    $baseUrl = (isset($_SERVER['HTTPS']) ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'];
-
-    echo "<h2>Видео загружено</h2>";
-
-    echo "<p>▶ Страница просмотра:</p>";
-    echo "<a href='watch.php?file=$filename'>$baseUrl/watch.php?file=$filename</a><br><br>";
-
-    echo "<p>📎 Прямая ссылка на видео:</p>";
-    echo "<a href='$path'>$baseUrl/$path</a>";
-
+if (move_uploaded_file($file["tmp_name"], $targetPath)) {
+    echo json_encode([
+        "success" => true,
+        "file" => $filename
+    ]);
 } else {
-    echo "Ошибка загрузки";
+    echo json_encode([
+        "success" => false
+    ]);
 }
-?>
