@@ -1,0 +1,29 @@
+<input type="file" id="file">
+<button onclick="upload()">Upload</button>
+
+<div id="videos"></div>
+
+<script>
+function upload(){
+  let f = document.getElementById("file").files[0];
+
+  let fd = new FormData();
+  fd.append("video", f);
+
+  fetch("upload.php", { method:"POST", body: fd })
+}
+
+fetch("list.php")
+.then(r=>r.json())
+.then(files=>{
+  let box = document.getElementById("videos");
+
+  files.forEach(f=>{
+    let v = document.createElement("video");
+    v.src = "uploads/" + f;
+    v.controls = true;
+    v.width = 300;
+    box.appendChild(v);
+  });
+});
+</script>
